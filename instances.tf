@@ -21,6 +21,7 @@ resource "aws_instance" "public" {
   key_name                    = "warsan"
   vpc_security_group_ids      = [aws_security_group.public.id]
   subnet_id                   = aws_subnet.public[0].id
+  user_data                   = file("user-data.sh")
 
   tags = {
     Name = "${var.env_code}-Public"
