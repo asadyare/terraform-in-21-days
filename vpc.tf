@@ -10,16 +10,16 @@ resource "aws_vpc" "main" {
   }
 }
 
-# resource "aws_subnet" "public" {
-#   count             = length(var.public_cidr)
-#   vpc_id            = aws_vpc.main.id
-#   cidr_block        = var.public_cidr[count.index]
-#   availability_zone = data.aws_availability_zones.available.names[count.index]
+resource "aws_subnet" "public" {
+  count             = length(var.public_cidr)
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.public_cidr[count.index]
+  availability_zone = data.aws_availability_zones.available.names[count.index]
 
-#   tags = {
-#     Name = "${var.env_code}-public-${count.index + 1}"
-#   }
-# }
+  tags = {
+    Name = "${var.env_code}-public-${count.index + 1}"
+  }
+}
 
 # resource "aws_subnet" "private" {
 #   count             = length(var.private_cidr)
