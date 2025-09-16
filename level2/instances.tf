@@ -15,14 +15,15 @@ data "aws_ami" "amazonlinux" {
 }
 
 # resource "aws_instance" "public" {
-#   count                       = 2
+#   # count                       = 2
 #   ami                         = data.aws_ami.amazonlinux.id
 #   associate_public_ip_address = true
 #   instance_type               = "t3.micro"
 #   key_name                    = "warsan"
 #   vpc_security_group_ids      = [aws_security_group.public.id]
-#   subnet_id                   = try(data.terraform_remote_state.level1.outputs["public_subnet_ids"][count.index], null)
+#   subnet_id                   = try(data.terraform_remote_state.level1.outputs["public_subnet_ids"][0], null)
 #   user_data                   = file("user-data.sh")
+#   iam_instance_profile        = aws_iam_instance_profile.main.name
 
 #   tags = {
 #     Name = "${var.env_code}-Public"
@@ -47,6 +48,7 @@ data "aws_ami" "amazonlinux" {
 #     from_port   = 80
 #     to_port     = 80
 #     protocol    = "tcp"
+#     cidr_blocks = ["0.0.0.0/0"]
 #     security_groups = [aws_security_group.load_balancer.id]
 #   }
 
@@ -102,6 +104,7 @@ resource "aws_security_group" "private" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
     security_groups = [aws_security_group.load_balancer.id]
   }
 
@@ -122,11 +125,14 @@ resource "aws_launch_template" "main" {
   name_prefix   = "${var.env_code}-"
   image_id      = data.aws_ami.amazonlinux.id
   instance_type = "t3.micro"
-  key_name      = "warsan"
+  # key_name      = "warsan"
 
   vpc_security_group_ids = [aws_security_group.private.id]
 
   user_data = base64encode(file("user-data.sh"))
+  iam_instance_profile {
+    name = aws_iam_instance_profile.main.name
+  }
 
   tag_specifications {
     resource_type = "instance"
