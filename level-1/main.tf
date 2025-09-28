@@ -12,5 +12,17 @@ module "vpc" {
   public_subnets     = var.public_cidr
   private_subnets    = var.private_cidr
   enable_nat_gateway = true
+
+  private_subnet_tags = {
+    "name"                                      = "private"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "kubernetes.io/role/internal-alb"           = "1"
+  }
+
+  public_subnet_tags = {
+    "name"                                      = "public"
+    "kubernetes.io/cluster/${var.cluster_name}" = "shared"
+    "kubernetes.io/role/alb"                    = "1"
+  }
 }
 
