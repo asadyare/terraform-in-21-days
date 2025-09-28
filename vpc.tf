@@ -8,7 +8,7 @@ resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "main"
+    Name = var.env_code
   }
 }
 
@@ -19,7 +19,7 @@ resource "aws_subnet" "public" {
   availability_zone = local.availability_zones[count.index]
 
   tags = {
-    Name = "public-${count.index + 1}"
+    Name = "${var.env_code}-public-${count.index + 1}"
   }
 }
 
@@ -30,7 +30,7 @@ resource "aws_subnet" "private" {
   availability_zone = local.availability_zones[count.index]
 
   tags = {
-    Name = "private${count.index + 1}"
+    Name = "${var.env_code}-private-${count.index + 1}"
   }
 }
 
@@ -40,7 +40,7 @@ resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
   tags = {
-    Name = "main"
+    Name = var.env_code
   }
 }
 
@@ -53,7 +53,7 @@ resource "aws_route_table" "public" {
   }
 
   tags = {
-    Name = "main"
+    Name = var.env_code
   }
 }
 
@@ -70,7 +70,7 @@ resource "aws_eip" "nat" {
   domain   = "vpc"
 
   tags = {
-    Name = "nat${count.index + 1}"
+    Name = "${var.env_code}-nat${count.index + 1}"
   }
 
 }
@@ -81,7 +81,7 @@ resource "aws_nat_gateway" "main" {
   subnet_id    = aws_subnet.public[count.index].id
 
   tags = {
-    Name = "main${count.index + 1}"
+    Name = "${var.env_code}-main${count.index + 1}"
   }
   depends_on = [ aws_internet_gateway.main ]
 }
@@ -96,7 +96,7 @@ resource "aws_route_table" "private" {
   }
 
   tags = {
-    Name = "private${count.index + 1}"
+    Name = "${var.env_code}-private${count.index + 1}"
   }
 }
 
